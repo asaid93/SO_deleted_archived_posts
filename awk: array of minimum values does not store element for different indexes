@@ -1,0 +1,81 @@
+awk: array of minimum values does not store element for different indexes
+Asked 1 month ago
+Active 1 month ago
+Viewed 18 times
+
+0
+
+
+This post is hidden. You deleted this post last month.
+In short, I can't managed to provide the minimum value with following piece of codes
+
+min[$1$2$4]=($3<min[$1$2$4])?$3:min[$1$2$4]
+--or
+min[$1$2$4]=(seen[$1$2$4]==1||$3<min[$1$2$4])?$3:min[$1$2$4]
+--or
+min[$1$2$4]=(NR==1||$3<min[$1$2$4])?$3:min[$1$2$4]
+What I am trying is to determine min and max values from $3 for every unique $1$2$4 column sets in file2. Then read file1 and print if:
+
+column 1,2,4 is matching from file2 and
+
+column 3 is between min and max values for related column sets
+
+file1:
+
+$ cat file1
+A [X] 13 [Z]
+A [X] 16 [Z]
+A [X] 12 [Z]
+A [X] 7 [Z]
+A [X] 10 [Z]
+A [X] 14 [Z]
+B [X] 8 [Z]
+A [X] 11 [Z]
+B [Y] 10 [T]
+B [Y] 11 [T]
+file2:
+
+$ cat file2
+A [X] 10 [Z]
+A [X] 12 [Z]
+B [Y] 9 [T]
+B [Y] 11 [T]
+awk code:
+
+$ cat lifeawk.sh 
+awk 'NR==FNR{if(seen[$1$2$4]++)
+min[$1$2$4]=(seen[$1$2$4]==1||$3<min[$1$2$4])?$3:min[$1$2$4]
+max[$1$2$4]=($3>max[$1$2$4])?$3:max[$1$2$4];
+next}
+
+{for (i=1; i<length(seen); i++)
+        if($3>=min[$1$2$4] && $3<=max[$1$2$4])
+                print "min:"min[$1$2$4],"<",$3,"<max:"max[$1$2$4],"for",$1$2$4}' file2 file1
+Current Output
+
+$ sh lifeawk.sh 
+min: < 7 <max:12 for A[X][Z]
+min: < 10 <max:12 for A[X][Z]
+min: < 11 <max:12 for A[X][Z]
+min: < 10 <max:11 for B[Y][T]
+Desired Output
+
+min:10 < 11 <max:12 for A[X][Z]
+min:9 < 10 <max:11 for B[Y][T]
+min=(NR==1||$3<min)?$3:min does work for the whole $3 in file1 without any array constrains. But I want min and max values seperately for both seen[A[X][Z]] and seen[B[Y][T]]
+
+Any help is appreciated. Thanks in advance.
+
+awk
+unix-text-processing
+Share
+Edit
+Close
+Undelete
+Flag
+edited Jul 12 at 11:34
+asked Jul 12 at 11:22
+
+Ahmet Said Akbulut
+3391111 bronze badges
+Comments disabled on deleted / locked posts / reviews
