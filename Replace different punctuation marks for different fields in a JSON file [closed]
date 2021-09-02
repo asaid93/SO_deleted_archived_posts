@@ -1,0 +1,112 @@
+Replace different punctuation marks for different fields in a JSON file [closed]
+Asked 1 month ago
+Active 1 month ago
+Viewed 61 times
+
+-1
+
+
+This post is hidden. It was automatically deleted last month by Community♦.
+Closed. This question needs details or clarity. It is not currently accepting answers.
+Want to improve this question? Add details and clarify the problem by editing this post.
+
+Closed last month.
+
+I have this JSON file
+
+{
+    "name": "John",
+    "emp-id": 1,
+    "age": 30,
+    "balance-amount-1": "-10000.80",
+    "balance-amount-2": "0",
+    "salary-amount": "20000",
+    "Total" : "9999.2"
+}
+which needs to be processed. Considering : is field seperator I need to
+
+replace every occurences of - with _ in $1
+remove double quotes " only around numbers and not string in $2.
+Final JSON file
+
+{
+    "name": "John",
+    "emp_id": 1,
+    "age": 30,
+    "balance_amount_1": -10000.00,
+    "balance_amount_2": 0,
+    "salary_amount": 20000,
+    "Total": 9999.2
+}
+I tried few things using sed but could not arrive at a solution working for all the scenarios.
+
+bash
+shell
+awk
+sed
+replace
+Share
+Edit
+Follow
+Flag
+edited Jul 16 at 13:47
+
+Ahmet Said Akbulut
+3391111 bronze badges
+asked Jul 12 at 16:46
+
+Karthick
+84611 gold badge77 silver badges2020 bronze badges
+I posted an answer please try it. – 
+Ahmet Said Akbulut
+ Jul 12 at 18:32   
+Comments disabled on deleted / locked posts / reviews
+1 Answer
+
+0
+
+This answer is hidden. This answer was deleted last month along with its parent question.
+AWK
+You have two tasks which I would handle seperately;
+
+First is to change hypens to underscores:
+
+awk -F":" -v OFS=":" '{gsub(/\-/,"_",$1)} {print $0}' file.json > file2.json
+output 1 (file2.json)
+
+{
+    "name": "John",
+    "emp_id": 1,
+    "age": 30,
+    "balance_amount_1": "-10000.80",
+    "balance_amount_2": "0",
+    "salary_amount": "20000",
+    "Total" : "9999.2"
+}
+Second is to "remove double quotes around only numbers and not string":
+
+awk -F":" -v OFS=":" '$2~/[[:digit:]]"/{gsub(/\"/,"",$2)} {print $0}' file2.json > file3.json
+output 2 (file3.json)
+
+{
+    "name": "John",
+    "emp-id": 1,
+    "age": 30,
+    "balance-amount-1": -10000.80,
+    "balance-amount-2": 0,
+    "salary-amount": 20000,
+    "Total" : 9999.2
+}
+usage of gsub Awk - replace one character only in a certain column
+usage of $2~/[[:digit:]]"/ awk partly string match (if column/word partly matches) and Check if a field is an integer in awk
+OFS must be defined as well if FS is defined awk unintentionally removing commas
+Share
+Edit
+Undelete
+Flag
+edited Jul 13 at 19:17
+answered Jul 12 at 18:14
+
+Ahmet Said Akbulut
+3391111 bronze badges
+Comments disabled on deleted / locked posts / reviews
