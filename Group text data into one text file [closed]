@@ -1,0 +1,107 @@
+Group text data into one text file [closed]
+Asked 1 month ago
+Active 1 month ago
+Viewed 104 times
+
+0
+
+
+This post is hidden. It was automatically deleted last month by Community♦.
+Closed. This question needs details or clarity. It is not currently accepting answers.
+Want to improve this question? Add details and clarify the problem by editing this post.
+
+Closed last month.
+
+I have 40 folders labeled sub_01...sub_40. In each folder a text file with data in one column as seen below
+
+File 1
+
+A 1
+B 2
+C 3
+
+File 2
+
+A 4
+B 5
+C 6
+.
+.
+.
+I want to use the terminal to group these files into one text file. The format I want it to be is as follow:
+
+A B C     
+1 2 3
+4 5 6
+.
+.
+Can someone please guide me how to do it using terminal in Mac? Thanks
+
+bash
+Share
+Edit
+Following
+Flag
+asked Jul 13 at 11:53
+
+Mudathir Bakhit
+111 bronze badge
+
+what have you tried so far ? Also, in a single file, can you have several lines with the same label (A, B or C) ? – 
+Aserre
+ Jul 13 at 11:55
+
+Would a solution in Python also be acceptable ? – 
+Programmer
+ Jul 13 at 11:56
+
+btw transposing a file in bash is not trivial at all : stackoverflow.com/questions/1729824/… – 
+Aserre
+ Jul 13 at 11:57
+Comments disabled on deleted / locked posts / reviews
+1 Answer
+
+0
+
+This answer is hidden. This answer was deleted last month along with its parent question.
+Test files and directories are created with @glennjackman's method.
+
+echo " A B C" > final.txt | for dir in ./sub*; do awk '{$1="";ORS=""}1; END{print "\n"}' $dir/* >> final.txt; done
+Output
+
+$ cat final.txt
+ A B C
+ 10 11 12
+ 20 21 22
+ 30 31 32
+ 40 41 42
+ 50 51 52
+A very tricky solution with awk program.
+$1="" does basically delete column 1.
+ORS="" does delete new line character \n
+END{print "\n"} creates new line at the end of transposed line.
+Only issue with this piece of code is speed which is uncomparable to @glennjackman's awk due to running awk program over and over again for each file in bash for-loop (I guess).
+my one-liner:
+
+real   0m0.154s
+user   0m0.006s
+sys    0m0.008s
+@glennjackman's awk:
+
+real   0m0.004s
+user   0m0.000s
+sys    0m0.003s
+Share
+Edit
+Undelete
+Flag
+edited Jul 13 at 19:09
+answered Jul 13 at 15:06
+
+Ahmet Said Akbulut
+3811515 bronze badges
+
+Appreciate your help. I will use it and practice more – 
+Mudathir Bakhit
+ Jul 16 at 5:05
+Comments disabled on deleted / locked posts / reviews
